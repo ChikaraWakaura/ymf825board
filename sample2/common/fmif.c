@@ -1,8 +1,9 @@
 // fmif.c
+#include	"fmif.h"
 #include	"fmpart.h"
 
 //	Variable
-static Part				_part;
+static Part		_part[MAX_MIDI_CHANNEL];
 static unsigned char	_midiCmdCounter;
 static unsigned char	_midiStatus;
 static unsigned char	_midiDataByte1;
@@ -19,8 +20,13 @@ void Fmdriver_init( void )
 	_midiDataByte1 = 0;
 	_midiDataByte2 = 0;
 
-	Part_init(&_part);
-	Part_pc(&_part,0);
+	Asgn_init();
+	Tone_init();
+
+	for ( int i = 0; i < MAX_MIDI_CHANNEL; i++ ) {
+		Part_init( &_part[i] );
+		Part_pc( &_part[i], 0 );
+	}
 }
 void Fmdriver_sendMidi( unsigned char byteStream )
 {
@@ -72,12 +78,18 @@ static void receiveDataByte( unsigned char byteStream )
 }
 static void generateMidiCmd( void )
 {
-	switch ( _midiStatus ){	//	receive only MIDI ch.1
-		case 0x80: Part_note( &_part, _midiDataByte1, 0 ); break;
-		case 0x90: Part_note( &_part, _midiDataByte1, _midiDataByte2 ); break;
-		case 0xb0: Part_cc( &_part, _midiDataByte1, _midiDataByte2 ); break;
-		case 0xc0: Part_pc( &_part, _midiDataByte1 ); break;
-		case 0xe0: Part_pbend( &_part, _midiDataByte1, _midiDataByte2 ); break;
+	unsigned char	bMidiChNo;
+	unsigned char	bMidiStatus;
+
+	bMidiStatus = _midiStatus & 0xF0;
+	bMidiChNo   = _midiStatus & 0x0F;
+
+	switch ( bMidiStatus ){
+		case 0x80: Part_note( &_part[bMidiChNo], _midiDataByte1, 0 ); break;
+		case 0x90: Part_note( &_part[bMidiChNo], _midiDataByte1, _midiDataByte2 ); break;
+		case 0xb0: Part_cc( &_part[bMidiChNo], _midiDataByte1, _midiDataByte2 ); break;
+		case 0xc0: Part_pc( &_part[bMidiChNo], _midiDataByte1 ); break;
+		case 0xe0: Part_pbend( &_part[bMidiChNo], _midiDataByte1, _midiDataByte2 ); break;
 		default: break;
 	}
 }
