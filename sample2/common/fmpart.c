@@ -11,6 +11,7 @@ static Note* getNote(Part* _this);
 //	getter
 unsigned char Part_cc1(Part* _this){ return _this->_cc1; }
 unsigned char Part_cc7(Part* _this){ return _this->_cc7; }
+unsigned char Part_cc11(Part* _this){ return _this->_cc11; }
 unsigned short Part_pb(Part* _this){ return _this->_pbvalue; }
 unsigned char Part_toneNumber(Part* _this){ return _this->_toneNumber; }
 
@@ -18,13 +19,11 @@ void Part_init( Part* _this )
 {
 	int i;
 
-	Asgn_init();
-	Tone_init();
-
 	_this->_topNt = 0;
 	_this->_endNt = 0;
 	_this->_cc1 = 0;
 	_this->_cc7 = 100;
+	_this->_cc11 = 127;
 	_this->_cc64 = 0;
 	_this->_pbvalue = 0x2000;
 	_this->_toneNumber = 0;
@@ -105,9 +104,19 @@ void Part_cc( Part* _this, unsigned char ccnum, unsigned char value )
 		}
 		case 7: {
 			_this->_cc7 = value;
-			writeSingle( REG_MASTER_VOL, (value<<1)&0xfc );
+			while ( nt != FMNULL ) {
+				Note_chgChVol(nt);
+				nt = Note_nextPtr(nt);
+			}
 			break;
 		}
+		case 11:
+			_this->_cc11 = value;
+			while ( nt != FMNULL ) {
+				Note_chgExpression(nt);
+				nt = Note_nextPtr(nt);
+			}
+			break;
 		case 64: {
 			_this->_cc64 = value;
 			if ( value < 64 ){
@@ -120,6 +129,16 @@ void Part_cc( Part* _this, unsigned char ccnum, unsigned char value )
 			}
 			break;
 		}
+		case 121:	// Reset All Controler
+			Part_init( _this );
+			break;
+		case 120:	// All Sound off
+		case 123:	// All Note off
+			while ( nt != FMNULL ) {
+				Note_keyoff(nt);
+				nt = Note_nextPtr(nt);
+			}
+			break;
 		default: break;
 	}
 }
