@@ -6,6 +6,7 @@ void initSPI( void );
 void initSD1( void );
 void delayMs( int ms );
 void writeSingle( unsigned char adrs, unsigned char data );
+unsigned char readSingle( unsigned char adrs );
 void writeBurst( unsigned char adrs, unsigned char* data, int count );
 
 static const unsigned char REG_TOP_ADRS = 12;
