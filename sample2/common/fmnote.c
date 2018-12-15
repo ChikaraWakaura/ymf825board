@@ -60,9 +60,13 @@ void Note_keyoff( Note* _this )
 }
 void Note_damp( Note* _this )
 {
-	if (_this->_vc != FMNULL) {
-		Asgn_releaseParticularVc(_this->_vc);
+	if ( _this->_vc != FMNULL ) {
+		Fmvoice_damp( _this->_vc );
 	}
+	Note_release( _this );
+	_this->_note     = 0;
+	_this->_velocity = 0;
+	_this->_vc       = FMNULL;
 }
 void Note_releaseVc( Note* _this, Fmvoice* rlsVc )
 {
@@ -86,6 +90,20 @@ void Note_chgVibDpt( Note* _this )
 	Part* pt = (Part*)_this->_parent;
 	if (pt == FMNULL) { return; }
 	Fmvoice_chgVibDpt(_this->_vc, Part_cc1(pt));
+}
+void Note_chgChVol( Note* _this )
+{
+	if (_this->_parent == FMNULL){ return; }
+	Part* pt = (Part*)_this->_parent;
+	if (pt == FMNULL) { return; }
+	Fmvoice_chgChVol(_this->_vc, Part_cc7(pt));
+}
+void Note_chgExpression( Note* _this )
+{
+	if (_this->_parent == FMNULL){ return; }
+	Part* pt = (Part*)_this->_parent;
+	if (pt == FMNULL) { return; }
+	Fmvoice_chgExpression(_this->_vc, Part_cc11(pt));
 }
 void Note_chgPit( Note* _this )
 {
