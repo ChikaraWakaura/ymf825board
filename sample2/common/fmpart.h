@@ -18,6 +18,7 @@ struct _Part{
 
 	unsigned char _cc1;
 	unsigned char _cc7;
+	unsigned char _cc11;
 	unsigned char _cc64;
 	unsigned short  _pbvalue;	//	0 - 16383
 	unsigned char _toneNumber;
@@ -34,6 +35,7 @@ extern void Part_releaseNote( Part* _this, Note* nt);
 //	getter
 extern unsigned char Part_cc1( Part* _this );
 extern unsigned char Part_cc7( Part* _this );
+extern unsigned char Part_cc11( Part* _this );
 extern unsigned short Part_pb( Part* _this );
 extern unsigned char Part_toneNumber( Part* _this );
 #endif
