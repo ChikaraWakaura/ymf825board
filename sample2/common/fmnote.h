@@ -26,6 +26,8 @@ extern void Note_releaseVc( Note* _this, Fmvoice* rlsVc );
 extern void Note_release( Note* _this );
 extern void Note_damp( Note* _this );
 extern void Note_chgVibDpt( Note* _this );
+extern void Note_chgChVol( Note* _this );
+extern void Note_chgExpression( Note* _this );
 extern void Note_chgPit( Note* _this );
 
 //	setter
